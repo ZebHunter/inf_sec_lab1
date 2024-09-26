@@ -9,10 +9,18 @@ let decode_uchar u = let b = Buffer.create 4 in
 
 let map_uchar_to_string l = List.map (fun x -> decode_uchar x) l
 
-let shuffle d =
-  let nd = List.map (fun c -> (Random.bits (), c)) d in
-  let sond = List.sort compare nd in
-  List.map snd sond
+let shuffle list =
+  let shuffled = List.map (fun x -> (Random.bits(), x)) list in
+  let sorted = List.sort compare shuffled in
+  List.map snd sorted
+
+let shuffle_random_times list =
+  let reshuffle_count = Random.int 10 + 1 in
+  let rec apply_shuffle n lst =
+    if n <= 0 then lst
+    else apply_shuffle (n - 1) (shuffle lst)
+  in
+  apply_shuffle reshuffle_count list
 
 let polibiy_index e l = 
   let i = List.find_index (fun x -> x = e) l in
@@ -71,4 +79,4 @@ let decode_text key str =
 let create_key = (Uchar.of_int 1040) -- (Uchar.of_int 1103) 
   |> map_uchar_to_string 
   |> List.append [" "; ";"; "."; ","; "-"; "\n"; "\t"; "?"; "!"; "ё"; ":"; "\""; "("; ")"]
-  |> shuffle 
+  |> shuffle_random_times 
