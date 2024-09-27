@@ -9,7 +9,6 @@ let () =
       let key = Lab1.Polibiy.create_key (String.length content) in
       let print_key = Lab1.Polibiy.write_text "key.txt" (List.fold_left (fun acc x -> acc ^ x) "" key) in
       print_key;
-      Printf.printf "\n%s\n" (Lab1.Polibiy.read_file filename);
         content 
         |> Lab1.Polibiy.encode_text key 
         |> Lab1.Polibiy.write_text "out.txt";
