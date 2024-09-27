@@ -134,6 +134,13 @@ let encode_text key str =
   in
   encode s key [] |> List.fold_left (fun acc1 x -> acc1 ^ string_of_int x) ""
 
+let my_int_of_char a =
+    match a with
+    | '-' -> raise (Failure "Unknown symbol: '-'")
+    | _ when (int_of_char a < 48 || int_of_char a > 57) ->
+        raise (Failure ("Unknown symbol: " ^ String.make 1 a))
+    | _ -> (int_of_char a) - 48
+
 (*
   Функция декодирования текста с рандомным квадратом Полибия
 
@@ -142,15 +149,19 @@ let encode_text key str =
 
 let decode_text key str = 
   let s = List.init (String.length str) (String.get str) in
-  let i = List.map (fun x -> (int_of_char x) - 48) s in
+  let i = List.map my_int_of_char s in
   let rec decode i key acc =
     match i with
     | [] -> List.rev acc
-    | x1 :: x2 :: xs -> let el = el_by_index (x1, x2) key in
-                        decode xs key (el :: acc)
-    | _ :: [] -> raise (Failure "Ошибка декодирования")
+    | x1 :: x2 :: xs -> 
+        let el = el_by_index (x1, x2) key in
+        decode xs key (el :: acc)
+    | _ :: [] -> raise (Failure "Unknown error")
   in 
-  decode i key [] |> List.fold_left (fun acc1 x -> acc1 ^ x) ""
+  try 
+    decode i key [] |> List.fold_left (fun acc1 x -> acc1 ^ x) ""
+  with 
+  | Failure msg -> failwith ("Decode error: " ^ msg)
 
 (*
   Функция создания ключа с параметром от длины текста
@@ -160,7 +171,7 @@ let decode_text key str =
 
 let create_key n = (Uchar.of_int 1040) -- (Uchar.of_int 1103) 
   |> map_uchar_to_string 
-  |> List.append [" "; ";"; "."; ","; "-"; "\n"; "\t"; "?"; "!"; "ё"; ":"; "\""; "("; ")"]
+  |> List.append [" "; ";"; "."; ","; "-"; "\n"; "\t"; "?"; "!"; "ё"; ":"; "\""; "("; ")";]
   |> shuffle_random_times n
 
 (*

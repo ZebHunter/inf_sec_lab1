@@ -14,7 +14,9 @@ let () =
         |> Lab1.Polibiy.write_text "out.txt";
   print_endline "\n...Encoded...";
   Printf.printf "\n%s\n" (Lab1.Polibiy.read_file "out.txt");
-  let content = Lab1.Polibiy.read_file "out.txt" in
+  print_endline "Введите имя файла для декодирования:";
+  let filename = read_line () in 
+    let content = Lab1.Polibiy.read_file filename in
     let key = Lab1.Polibiy.read_key "key.txt" in
       content 
       |> Lab1.Polibiy.decode_text key
